@@ -27,6 +27,12 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
+def requestedReleaseBuild = gradle.startParameter.taskNames.any { taskName ->
+    taskName.toLowerCase().contains('release')
+}
+if (requestedReleaseBuild && !keystorePropertiesFile.exists()) {
+    throw new GradleException("Missing android/key.properties. Add your Play Console upload key details before building a release bundle.")
+}
 
 android {
     namespace "com.example.speedometer"
@@ -71,18 +77,6 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-        }
-    }
-}
-
-gradle.projectsEvaluated {
-    tasks.matching { task ->
-        task.name == 'bundleRelease' || task.name == 'assembleRelease'
-    }.configureEach {
-        doFirst {
-            if (!keystorePropertiesFile.exists()) {
-                throw new GradleException("Missing android/key.properties. Add your Play Console upload key details before building a release bundle.")
-            }
         }
     }
 }
