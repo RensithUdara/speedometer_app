@@ -126,7 +126,7 @@ class MeterPainter extends CustomPainter {
   Offset angleToOffset(Offset center, num angle, double distance) {
     final radians = angleToRadian(angle);
     final x = center.dx + distance * cos(radians);
-    final y = center.dx + distance * sin(radians);
+    final y = center.dy + distance * sin(radians);
     return Offset(x, y);
   }
 
