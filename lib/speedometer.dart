@@ -773,24 +773,32 @@ class _SettingsView extends StatelessWidget {
   const _SettingsView({
     required this.selectedUnit,
     required this.speedLimit,
+    required this.distanceGoalKm,
     required this.alertsEnabled,
     required this.ecoMode,
+    required this.cruiseMode,
     required this.displaySpeed,
     required this.onUnitChanged,
     required this.onSpeedLimitChanged,
+    required this.onDistanceGoalChanged,
     required this.onAlertsChanged,
     required this.onEcoModeChanged,
+    required this.onCruiseModeChanged,
   });
 
   final SpeedUnit selectedUnit;
   final double speedLimit;
+  final double distanceGoalKm;
   final bool alertsEnabled;
   final bool ecoMode;
+  final bool cruiseMode;
   final double Function(double speed) displaySpeed;
   final ValueChanged<SpeedUnit> onUnitChanged;
   final ValueChanged<double> onSpeedLimitChanged;
+  final ValueChanged<double> onDistanceGoalChanged;
   final ValueChanged<bool> onAlertsChanged;
   final ValueChanged<bool> onEcoModeChanged;
+  final ValueChanged<bool> onCruiseModeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -843,6 +851,29 @@ class _SettingsView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          _GlassPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Distance Goal: ${distanceGoalKm.toStringAsFixed(1)} KM',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Slider(
+                  min: 0.5,
+                  max: 10,
+                  divisions: 19,
+                  value: distanceGoalKm,
+                  onChanged: onDistanceGoalChanged,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           _SettingsTile(
             icon: Icons.notifications_active_outlined,
             title: 'Safety Alerts',
@@ -857,6 +888,14 @@ class _SettingsView extends StatelessWidget {
             subtitle: 'Soft-limits acceleration for smoother driving',
             value: ecoMode,
             onChanged: onEcoModeChanged,
+          ),
+          const SizedBox(height: 12),
+          _SettingsTile(
+            icon: Icons.assistant_direction_outlined,
+            title: 'Cruise Control',
+            subtitle: 'Hold speed near the active limit',
+            value: cruiseMode,
+            onChanged: onCruiseModeChanged,
           ),
         ],
       ),
