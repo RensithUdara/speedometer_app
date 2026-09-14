@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'speedometer.dart'; // Ensure this path is correct based on your project structure
+import 'speedometer.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               SizedBox(height: 20),
               Text(
-                'Speedometer App',
+                'SpeedTrack',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
