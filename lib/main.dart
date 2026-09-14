@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'splash_screen.dart'; // Ensure this path is correct based on your project structure
+import 'splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,9 +13,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Speedometer App',
+      title: 'SpeedTrack',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF43B3FF)),
+        useMaterial3: true,
       ),
       home: const SplashScreen(),
     );
