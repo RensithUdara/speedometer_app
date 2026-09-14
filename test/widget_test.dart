@@ -18,7 +18,11 @@ void main() {
     expect(find.text('Average Speed'), findsOneWidget);
     expect(find.text('Max Speed'), findsOneWidget);
     expect(find.text('Distance'), findsOneWidget);
+    expect(find.text('Distance Goal'), findsOneWidget);
     expect(find.text('Trip Time'), findsOneWidget);
+    expect(find.text('Safety Score'), findsOneWidget);
+    expect(find.text('Over Limit'), findsOneWidget);
+    expect(find.text('Cruise Control'), findsOneWidget);
     expect(find.byIcon(Icons.restart_alt), findsOneWidget);
 
     await tester.tap(find.text('Trips'));
@@ -35,5 +39,6 @@ void main() {
     expect(find.text('Driving preferences'), findsOneWidget);
     expect(find.text('Safety Alerts'), findsOneWidget);
     expect(find.text('Eco Mode'), findsOneWidget);
+    expect(find.text('Cruise Control'), findsOneWidget);
   });
 }
