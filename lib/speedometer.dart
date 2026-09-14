@@ -355,7 +355,7 @@ class _HomeView extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 20),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight - 42),
             child: Column(
@@ -366,10 +366,10 @@ class _HomeView extends StatelessWidget {
                   onToggleUnit: onToggleUnit,
                   onResetTrip: onResetTrip,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
                 Center(
                   child: SizedBox(
-                    height: 390,
+                    height: 340,
                     child: RepaintBoundary(
                       child: CustomPaint(
                         painter: MeterPainter(
@@ -388,7 +388,7 @@ class _HomeView extends StatelessWidget {
                   speedLimit:
                       '${displaySpeed(speedLimit).round()} ${selectedUnit.label}',
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 Row(
                   children: [
                     Expanded(
@@ -402,7 +402,7 @@ class _HomeView extends StatelessWidget {
                         onPressed: onBrake,
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: GestureDetector(
                         onLongPress: onStartAccelerating,
@@ -425,14 +425,14 @@ class _HomeView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  childAspectRatio: 2.05,
+                  childAspectRatio: 2.35,
                   children: [
                     _StatCard(
                       icon: Icons.speed,
@@ -651,7 +651,7 @@ class _SettingsView extends StatelessWidget {
                   'Units',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -672,7 +672,7 @@ class _SettingsView extends StatelessWidget {
                   'Speed Limit: ${displaySpeed(speedLimit).round()} ${selectedUnit.label}',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -733,7 +733,7 @@ class _Header extends StatelessWidget {
                   text: 'Speed',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 34,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                   ),
                   children: [
@@ -748,7 +748,7 @@ class _Header extends StatelessWidget {
                 'Drive Safe, Go Further',
                 style: TextStyle(
                   color: Color(0xFFA8BCE1),
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -756,7 +756,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: 164,
+          width: 142,
           child: _UnitSwitch(
             selectedUnit: selectedUnit,
             onChanged: onToggleUnit,
@@ -785,8 +785,8 @@ class _UnitSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 54,
-      padding: const EdgeInsets.all(5),
+      height: 44,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFF071629).withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(28),
@@ -839,7 +839,7 @@ class _UnitOption extends StatelessWidget {
           unit.label,
           style: TextStyle(
             color: selected ? Colors.white : const Color(0xFF91A4C6),
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -867,8 +867,8 @@ class _RoundIconButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         onTap: onPressed,
         child: Container(
-          width: 56,
-          height: 56,
+          width: 46,
+          height: 46,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
@@ -878,7 +878,7 @@ class _RoundIconButton extends StatelessWidget {
             ),
             border: Border.all(color: const Color(0xFF456FA7)),
           ),
-          child: Icon(icon, color: Colors.white, size: 30),
+          child: Icon(icon, color: Colors.white, size: 24),
         ),
       ),
     );
@@ -910,15 +910,15 @@ class _SafetyBanner extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: Icon(icon, color: color, size: 36),
+            child: Icon(icon, color: color, size: 29),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -929,7 +929,7 @@ class _SafetyBanner extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -938,7 +938,7 @@ class _SafetyBanner extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: Color(0xFFA8BCE1),
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -949,7 +949,7 @@ class _SafetyBanner extends StatelessWidget {
             '$safetyScore%',
             style: TextStyle(
               color: color,
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -980,7 +980,7 @@ class _DriveButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         onTap: onPressed,
         child: Ink(
-          height: 72,
+          height: 58,
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: colors),
             borderRadius: BorderRadius.circular(20),
@@ -998,13 +998,13 @@ class _DriveButton extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, color: Colors.white, size: 32),
-                  const SizedBox(width: 12),
+                  Icon(icon, color: Colors.white, size: 25),
+                  const SizedBox(width: 9),
                   Text(
                     label,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 17,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -1034,11 +1034,11 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GlassPanel(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          Icon(icon, color: iconColor, size: 36),
-          const SizedBox(width: 14),
+          Icon(icon, color: iconColor, size: 28),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1050,18 +1050,18 @@ class _StatCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Color(0xFFA8BCE1),
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1093,10 +1093,10 @@ class _BottomNavigation extends StatelessWidget {
     ];
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 14),
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
       child: Container(
-        height: 92,
-        padding: const EdgeInsets.all(10),
+        height: 78,
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: const Color(0xFF020B15).withValues(alpha: 0.94),
           borderRadius: BorderRadius.circular(28),
@@ -1140,7 +1140,7 @@ class _BottomNavItem extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: 7),
+        padding: const EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           color: selected
               ? const Color(0xFF0E4B8D).withValues(alpha: 0.7)
@@ -1158,9 +1158,9 @@ class _BottomNavItem extends StatelessWidget {
               icon,
               color:
                   selected ? const Color(0xFF43B3FF) : const Color(0xFF93A5C5),
-              size: 25,
+              size: 21,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               label,
               maxLines: 1,
@@ -1169,7 +1169,7 @@ class _BottomNavItem extends StatelessWidget {
                 color: selected
                     ? const Color(0xFF43B3FF)
                     : const Color(0xFFA8BCE1),
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -1194,7 +1194,7 @@ class _TabScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+      padding: const EdgeInsets.fromLTRB(18, 22, 18, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1202,7 +1202,7 @@ class _TabScaffold extends StatelessWidget {
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 34,
+              fontSize: 28,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -1210,11 +1210,11 @@ class _TabScaffold extends StatelessWidget {
             subtitle,
             style: const TextStyle(
               color: Color(0xFFA8BCE1),
-              fontSize: 16,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           child,
         ],
       ),
@@ -1225,7 +1225,7 @@ class _TabScaffold extends StatelessWidget {
 class _GlassPanel extends StatelessWidget {
   const _GlassPanel({
     required this.child,
-    this.padding = const EdgeInsets.all(18),
+    this.padding = const EdgeInsets.all(14),
   });
 
   final Widget child;
@@ -1272,8 +1272,8 @@ class _WideInfoCard extends StatelessWidget {
     return _GlassPanel(
       child: Row(
         children: [
-          Icon(icon, color: accentColor, size: 36),
-          const SizedBox(width: 14),
+          Icon(icon, color: accentColor, size: 28),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1282,16 +1282,16 @@ class _WideInfoCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   body,
                   style: const TextStyle(
                     color: Color(0xFFA8BCE1),
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1323,18 +1323,18 @@ class _MiniMetric extends StatelessWidget {
             label,
             style: const TextStyle(
               color: Color(0xFFA8BCE1),
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 22,
+              fontSize: 17,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -1364,8 +1364,8 @@ class _SettingsTile extends StatelessWidget {
     return _GlassPanel(
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF43B3FF), size: 32),
-          const SizedBox(width: 14),
+          Icon(icon, color: const Color(0xFF43B3FF), size: 26),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1374,7 +1374,7 @@ class _SettingsTile extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -1382,7 +1382,7 @@ class _SettingsTile extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: Color(0xFFA8BCE1),
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1404,23 +1404,23 @@ class _EmptyState extends StatelessWidget {
     return const _GlassPanel(
       child: Column(
         children: [
-          Icon(Icons.receipt_long_outlined, color: Color(0xFF43B3FF), size: 52),
-          SizedBox(height: 12),
+          Icon(Icons.receipt_long_outlined, color: Color(0xFF43B3FF), size: 42),
+          SizedBox(height: 10),
           Text(
             'No saved trips yet',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6),
           Text(
             'Save a trip from the Trips tab after driving.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(0xFFA8BCE1),
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),
