@@ -24,14 +24,14 @@ class MeterPainter extends CustomPainter {
     final trackPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 22
+      ..strokeWidth = 18
       ..color = const Color(0xFF1A2D48);
     canvas.drawArc(rect, startAngle, sweepAngle, false, trackPaint);
 
     final glowPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 28
+      ..strokeWidth = 22
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 16)
       ..shader = const SweepGradient(
         startAngle: 0,
@@ -49,7 +49,7 @@ class MeterPainter extends CustomPainter {
     final progressPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 18
+      ..strokeWidth = 14
       ..shader = const SweepGradient(
         startAngle: 0,
         endAngle: pi * 2,
@@ -77,11 +77,11 @@ class MeterPainter extends CustomPainter {
   void _drawTicks(Canvas canvas, Offset center, double radius) {
     final smallTickPaint = Paint()
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 3
+      ..strokeWidth = 2
       ..color = Colors.white.withValues(alpha: 0.28);
     final majorTickPaint = Paint()
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5
+      ..strokeWidth = 4
       ..color = Colors.white.withValues(alpha: 0.85);
 
     for (var i = 0; i <= 50; i++) {
@@ -100,7 +100,7 @@ class MeterPainter extends CustomPainter {
           text: '$value',
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -122,7 +122,7 @@ class MeterPainter extends CustomPainter {
     final needleEnd = _point(center, needleAngle, radius * 0.68);
     final needlePaint = Paint()
       ..strokeCap = StrokeCap.square
-      ..strokeWidth = 6
+      ..strokeWidth = 5
       ..color = const Color(0xFFFF4053);
     canvas.drawLine(center, needleEnd, needlePaint);
   }
@@ -150,7 +150,7 @@ class MeterPainter extends CustomPainter {
         text: 'Speed\n',
         style: const TextStyle(
           color: Color(0xFF9DBCF4),
-          fontSize: 16,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
         children: [
@@ -158,7 +158,7 @@ class MeterPainter extends CustomPainter {
             text: '${percentage.round()}\n',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 72,
+              fontSize: 58,
               height: 1.05,
               fontWeight: FontWeight.w800,
             ),
@@ -167,7 +167,7 @@ class MeterPainter extends CustomPainter {
             text: unitLabel,
             style: const TextStyle(
               color: Color(0xFFB4C5E8),
-              fontSize: 24,
+              fontSize: 19,
               fontWeight: FontWeight.w800,
             ),
           ),
