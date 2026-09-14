@@ -14,19 +14,23 @@ enum SpeedUnit {
 class TripRecord {
   const TripRecord({
     required this.title,
+    required this.createdAt,
     required this.averageSpeed,
     required this.maxSpeed,
     required this.distanceKm,
     required this.driveSeconds,
     required this.safetyScore,
+    required this.overLimitEvents,
   });
 
   final String title;
+  final DateTime createdAt;
   final double averageSpeed;
   final double maxSpeed;
   final double distanceKm;
   final int driveSeconds;
   final int safetyScore;
+  final int overLimitEvents;
 }
 
 class Speedometer extends StatefulWidget {
@@ -46,11 +50,13 @@ class _SpeedometerState extends State<Speedometer>
   bool isPressing = false;
   bool alertsEnabled = true;
   bool ecoMode = false;
+  bool cruiseMode = false;
   int selectedTab = 0;
   SpeedUnit selectedUnit = SpeedUnit.kmh;
   double maxSpeed = 0;
   double totalSpeed = 0;
   double distanceKm = 0;
+  double distanceGoalKm = 1;
   double speedLimit = 80;
   int speedCount = 0;
   double driveSeconds = 0;
@@ -80,6 +86,12 @@ class _SpeedometerState extends State<Speedometer>
 
   bool get isOverLimit => currentSpeed > speedLimit;
 
+  int get overLimitEvents => overLimitSamples;
+
+  double get goalProgress => (distanceKm / distanceGoalKm).clamp(0, 1);
+
+  bool get goalReached => distanceKm >= distanceGoalKm;
+
   int get safetyScore {
     if (speedCount == 0) return 100;
     final penalty = (overLimitSamples / speedCount * 55).round();
@@ -92,6 +104,13 @@ class _SpeedometerState extends State<Speedometer>
       selectedUnit == SpeedUnit.kmh ? valueKm : valueKm * SpeedUnit.mph.factor;
 
   String get distanceUnit => selectedUnit == SpeedUnit.kmh ? 'KM' : 'MI';
+
+  TripRecord? get bestTrip {
+    if (savedTrips.isEmpty) return null;
+    return savedTrips.reduce(
+      (best, trip) => trip.distanceKm > best.distanceKm ? trip : best,
+    );
+  }
 
   String formatDuration(num secondsValue) {
     final totalSeconds = secondsValue.round();
@@ -123,9 +142,28 @@ class _SpeedometerState extends State<Speedometer>
     });
   }
 
+  void _toggleCruiseMode() {
+    setState(() {
+      cruiseMode = !cruiseMode;
+      isPressing = cruiseMode;
+      _lastSampleAt = DateTime.now();
+    });
+
+    if (cruiseMode) {
+      controller.animateTo(
+        (speedLimit / 100).clamp(0.25, ecoMode ? 0.72 : 0.9),
+        duration: const Duration(milliseconds: 850),
+        curve: Curves.easeOutCubic,
+      );
+    } else {
+      controller.animateBack(0, duration: const Duration(seconds: 4));
+    }
+  }
+
   void _startAccelerating() {
     setState(() {
       isPressing = true;
+      cruiseMode = false;
       _lastSampleAt = DateTime.now();
     });
     controller.animateTo(
@@ -138,6 +176,7 @@ class _SpeedometerState extends State<Speedometer>
   Future<void> _releaseAccelerator() async {
     setState(() {
       isPressing = false;
+      cruiseMode = false;
       _lastSampleAt = DateTime.now();
     });
     await Future.delayed(const Duration(milliseconds: 250));
@@ -148,6 +187,7 @@ class _SpeedometerState extends State<Speedometer>
   void _brake() {
     setState(() {
       isPressing = false;
+      cruiseMode = false;
       _lastSampleAt = DateTime.now();
     });
     controller.animateBack(
@@ -162,6 +202,7 @@ class _SpeedometerState extends State<Speedometer>
     controller.value = 0;
     setState(() {
       isPressing = false;
+      cruiseMode = false;
       maxSpeed = 0;
       totalSpeed = 0;
       distanceKm = 0;
@@ -179,15 +220,27 @@ class _SpeedometerState extends State<Speedometer>
         0,
         TripRecord(
           title: 'Trip ${savedTrips.length + 1}',
+          createdAt: DateTime.now(),
           averageSpeed: averageSpeed,
           maxSpeed: maxSpeed,
           distanceKm: distanceKm,
           driveSeconds: driveSeconds.round(),
           safetyScore: safetyScore,
+          overLimitEvents: overLimitEvents,
         ),
       );
     });
     _resetTrip();
+  }
+
+  void _deleteTrip(TripRecord trip) {
+    setState(() {
+      savedTrips.remove(trip);
+    });
+  }
+
+  void _clearRecords() {
+    setState(savedTrips.clear);
   }
 
   void _toggleUnit(SpeedUnit unit) {
@@ -227,10 +280,14 @@ class _SpeedometerState extends State<Speedometer>
                       distanceKm: distanceKm,
                       driveSeconds: driveSeconds,
                       speedLimit: speedLimit,
+                      distanceGoalKm: distanceGoalKm,
                       safetyScore: safetyScore,
                       alertsEnabled: alertsEnabled,
                       isOverLimit: isOverLimit,
                       isPressing: isPressing,
+                      cruiseMode: cruiseMode,
+                      overLimitEvents: overLimitEvents,
+                      goalProgress: goalProgress,
                       distanceUnit: distanceUnit,
                       displaySpeed: displaySpeed,
                       displayDistance: displayDistance,
@@ -238,6 +295,7 @@ class _SpeedometerState extends State<Speedometer>
                       onToggleUnit: _toggleUnit,
                       onResetTrip: _resetTrip,
                       onBrake: _brake,
+                      onToggleCruise: _toggleCruiseMode,
                       onStartAccelerating: _startAccelerating,
                       onReleaseAccelerator: _releaseAccelerator,
                     ),
@@ -248,6 +306,10 @@ class _SpeedometerState extends State<Speedometer>
                       maxSpeed: maxSpeed,
                       driveSeconds: driveSeconds,
                       safetyScore: safetyScore,
+                      overLimitEvents: overLimitEvents,
+                      distanceGoalKm: distanceGoalKm,
+                      goalProgress: goalProgress,
+                      goalReached: goalReached,
                       distanceUnit: distanceUnit,
                       displaySpeed: displaySpeed,
                       displayDistance: displayDistance,
@@ -262,17 +324,27 @@ class _SpeedometerState extends State<Speedometer>
                       displaySpeed: displaySpeed,
                       displayDistance: displayDistance,
                       formatDuration: formatDuration,
+                      bestTrip: bestTrip,
+                      onDeleteTrip: _deleteTrip,
+                      onClearRecords: _clearRecords,
                     ),
                     _SettingsView(
                       selectedUnit: selectedUnit,
                       speedLimit: speedLimit,
+                      distanceGoalKm: distanceGoalKm,
                       alertsEnabled: alertsEnabled,
                       ecoMode: ecoMode,
+                      cruiseMode: cruiseMode,
                       displaySpeed: displaySpeed,
                       onUnitChanged: _toggleUnit,
                       onSpeedLimitChanged: (value) {
                         setState(() {
                           speedLimit = value;
+                        });
+                      },
+                      onDistanceGoalChanged: (value) {
+                        setState(() {
+                          distanceGoalKm = value;
                         });
                       },
                       onAlertsChanged: (value) {
@@ -284,6 +356,9 @@ class _SpeedometerState extends State<Speedometer>
                         setState(() {
                           ecoMode = value;
                         });
+                      },
+                      onCruiseModeChanged: (value) {
+                        if (value != cruiseMode) _toggleCruiseMode();
                       },
                     ),
                   ],
@@ -314,10 +389,14 @@ class _HomeView extends StatelessWidget {
     required this.distanceKm,
     required this.driveSeconds,
     required this.speedLimit,
+    required this.distanceGoalKm,
     required this.safetyScore,
     required this.alertsEnabled,
     required this.isOverLimit,
     required this.isPressing,
+    required this.cruiseMode,
+    required this.overLimitEvents,
+    required this.goalProgress,
     required this.distanceUnit,
     required this.displaySpeed,
     required this.displayDistance,
@@ -325,6 +404,7 @@ class _HomeView extends StatelessWidget {
     required this.onToggleUnit,
     required this.onResetTrip,
     required this.onBrake,
+    required this.onToggleCruise,
     required this.onStartAccelerating,
     required this.onReleaseAccelerator,
   });
@@ -336,10 +416,14 @@ class _HomeView extends StatelessWidget {
   final double distanceKm;
   final double driveSeconds;
   final double speedLimit;
+  final double distanceGoalKm;
   final int safetyScore;
   final bool alertsEnabled;
   final bool isOverLimit;
   final bool isPressing;
+  final bool cruiseMode;
+  final int overLimitEvents;
+  final double goalProgress;
   final String distanceUnit;
   final double Function(double speed) displaySpeed;
   final double Function(double valueKm) displayDistance;
@@ -347,6 +431,7 @@ class _HomeView extends StatelessWidget {
   final ValueChanged<SpeedUnit> onToggleUnit;
   final VoidCallback onResetTrip;
   final VoidCallback onBrake;
+  final VoidCallback onToggleCruise;
   final VoidCallback onStartAccelerating;
   final Future<void> Function() onReleaseAccelerator;
 
@@ -388,6 +473,14 @@ class _HomeView extends StatelessWidget {
                   speedLimit:
                       '${displaySpeed(speedLimit).round()} ${selectedUnit.label}',
                 ),
+                const SizedBox(height: 10),
+                _GoalProgressCard(
+                  progress: goalProgress,
+                  current:
+                      '${displayDistance(distanceKm).toStringAsFixed(2)} $distanceUnit',
+                  target:
+                      '${displayDistance(distanceGoalKm).toStringAsFixed(1)} $distanceUnit',
+                ),
                 const SizedBox(height: 14),
                 Row(
                   children: [
@@ -425,6 +518,17 @@ class _HomeView extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                _DriveButton(
+                  label: cruiseMode ? 'Cruise On' : 'Cruise Control',
+                  icon: cruiseMode
+                      ? Icons.pause_circle_outline
+                      : Icons.assistant_direction_outlined,
+                  colors: cruiseMode
+                      ? const [Color(0xFF43B3FF), Color(0xFF3159FF)]
+                      : const [Color(0xFF304966), Color(0xFF142940)],
+                  onPressed: onToggleCruise,
+                ),
                 const SizedBox(height: 16),
                 GridView.count(
                   crossAxisCount: 2,
@@ -461,6 +565,18 @@ class _HomeView extends StatelessWidget {
                       label: 'Trip Time',
                       value: formatDuration(driveSeconds),
                     ),
+                    _StatCard(
+                      icon: Icons.verified_user_outlined,
+                      iconColor: const Color(0xFF35E676),
+                      label: 'Safety Score',
+                      value: '$safetyScore%',
+                    ),
+                    _StatCard(
+                      icon: Icons.warning_amber_rounded,
+                      iconColor: const Color(0xFFFF6575),
+                      label: 'Over Limit',
+                      value: '$overLimitEvents times',
+                    ),
                   ],
                 ),
               ],
@@ -480,6 +596,10 @@ class _TripsView extends StatelessWidget {
     required this.maxSpeed,
     required this.driveSeconds,
     required this.safetyScore,
+    required this.overLimitEvents,
+    required this.distanceGoalKm,
+    required this.goalProgress,
+    required this.goalReached,
     required this.distanceUnit,
     required this.displaySpeed,
     required this.displayDistance,
@@ -494,6 +614,10 @@ class _TripsView extends StatelessWidget {
   final double maxSpeed;
   final double driveSeconds;
   final int safetyScore;
+  final int overLimitEvents;
+  final double distanceGoalKm;
+  final double goalProgress;
+  final bool goalReached;
   final String distanceUnit;
   final double Function(double speed) displaySpeed;
   final double Function(double valueKm) displayDistance;
@@ -514,6 +638,14 @@ class _TripsView extends StatelessWidget {
             body:
                 '${displayDistance(distanceKm).toStringAsFixed(2)} $distanceUnit  |  ${formatDuration(driveSeconds)}',
             accentColor: const Color(0xFF2DE2CF),
+          ),
+          const SizedBox(height: 12),
+          _GoalProgressCard(
+            progress: goalProgress,
+            current:
+                '${displayDistance(distanceKm).toStringAsFixed(2)} $distanceUnit',
+            target:
+                '${displayDistance(distanceGoalKm).toStringAsFixed(1)} $distanceUnit',
           ),
           const SizedBox(height: 12),
           Row(
@@ -558,10 +690,10 @@ class _TripsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _WideInfoCard(
-            icon: Icons.stacked_line_chart,
-            title: 'Drive Insights',
+            icon: goalReached ? Icons.flag_circle_outlined : Icons.stacked_line_chart,
+            title: goalReached ? 'Goal Completed' : 'Drive Insights',
             body:
-                'Top speed ${displaySpeed(maxSpeed).toStringAsFixed(1)} ${selectedUnit.label}. Keep steady acceleration for a better score.',
+                'Top speed ${displaySpeed(maxSpeed).toStringAsFixed(1)} ${selectedUnit.label}. Over limit events: $overLimitEvents.',
             accentColor: const Color(0xFFFFA72B),
           ),
         ],
@@ -578,6 +710,9 @@ class _RecordsView extends StatelessWidget {
     required this.displaySpeed,
     required this.displayDistance,
     required this.formatDuration,
+    required this.bestTrip,
+    required this.onDeleteTrip,
+    required this.onClearRecords,
   });
 
   final List<TripRecord> records;
@@ -586,6 +721,9 @@ class _RecordsView extends StatelessWidget {
   final double Function(double speed) displaySpeed;
   final double Function(double valueKm) displayDistance;
   final String Function(num secondsValue) formatDuration;
+  final TripRecord? bestTrip;
+  final ValueChanged<TripRecord> onDeleteTrip;
+  final VoidCallback onClearRecords;
 
   @override
   Widget build(BuildContext context) {
@@ -596,17 +734,35 @@ class _RecordsView extends StatelessWidget {
           ? const _EmptyState()
           : Column(
               children: [
+                if (bestTrip != null) ...[
+                  _WideInfoCard(
+                    icon: Icons.emoji_events_outlined,
+                    title: 'Best Distance',
+                    body:
+                        '${displayDistance(bestTrip!.distanceKm).toStringAsFixed(2)} $distanceUnit on ${bestTrip!.title}',
+                    accentColor: const Color(0xFFFFD35A),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 for (final trip in records)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _WideInfoCard(
-                      icon: Icons.receipt_long,
-                      title: trip.title,
-                      body:
-                          '${displayDistance(trip.distanceKm).toStringAsFixed(2)} $distanceUnit  |  Max ${displaySpeed(trip.maxSpeed).toStringAsFixed(1)} ${selectedUnit.label}  |  ${formatDuration(trip.driveSeconds)}  |  ${trip.safetyScore}%',
-                      accentColor: const Color(0xFF43B3FF),
+                    child: _RecordCard(
+                      trip: trip,
+                      selectedUnit: selectedUnit,
+                      distanceUnit: distanceUnit,
+                      displaySpeed: displaySpeed,
+                      displayDistance: displayDistance,
+                      formatDuration: formatDuration,
+                      onDelete: () => onDeleteTrip(trip),
                     ),
                   ),
+                _DriveButton(
+                  label: 'Clear Records',
+                  icon: Icons.delete_sweep_outlined,
+                  colors: const [Color(0xFFFF6575), Color(0xFFB72E45)],
+                  onPressed: onClearRecords,
+                ),
               ],
             ),
     );
